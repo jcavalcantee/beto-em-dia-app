@@ -5,6 +5,20 @@ resource "aws_cognito_user_pool" "this" {
 
     auto_verified_attributes = ["email"]
 
+    verification_message_template {
+    default_email_option = "CONFIRM_WITH_CODE"
+    email_subject        = "Confirme seu cadastro no Beto em Dia"
+    email_message        = <<-EOT
+      Olá!
+
+      Seu código de confirmação do Beto em Dia é:
+
+      {####}
+
+      Esse código é válido por 24 horas.
+    EOT
+  }
+
     password_policy {
         minimum_length    = 8
         require_lowercase = true
