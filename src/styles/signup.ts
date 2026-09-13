@@ -1,4 +1,5 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native';
+import { colors, fonts } from '../constants';
 
 export const styles = StyleSheet.create({
     container: {
@@ -217,5 +218,13 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 20,
 
     },
+    passwordRequirement: {
+        fontSize: 12,
+        fontFamily: fonts.regular,
+        color: colors.labelColor
+    },
+    passwordRequirementValid: {
+        color: colors.primary
+    }
 
 })

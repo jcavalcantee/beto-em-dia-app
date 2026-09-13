@@ -18,7 +18,7 @@ export default function Index() {
       <Pressable onPress={() => router.push('/signup/signup')}>
         <Text style={styles.buttonPrimary}>CRIAR MINHA CONTA</Text>
       </Pressable>
-      <Pressable onPress={() => alert('Em breve!')}>
+      <Pressable onPress={() => router.push('/login/login')}>
         <Text style={styles.buttonSecondary}>JÁ TENHO CONTA</Text>
       </Pressable>
       <Text style={styles.alertText}>
