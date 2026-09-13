@@ -3,12 +3,13 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../constants';
-import { confirmAccount } from '../../services/cognito';
+import { completeLogin, confirmAccount, getIdToken } from '../../services/cognito';
+import { createProfile, type ProfileData } from '../../services/profile';
 
 export default function ValidateAccount() {
     const [code, setCode] = useState('');
     const [focusedInput, setFocusedInput] = useState<string | null>(null);
-    const { email } = useLocalSearchParams();
+    const { email, profile } = useLocalSearchParams<{ email: string; profile: string }>();
 
     const validateInput = () => {
         return code.length !== 6;
@@ -16,16 +17,40 @@ export default function ValidateAccount() {
 
     const handleConfirmAccount = async () => {
         try {
-            const response = await confirmAccount(
-                email as string,
-                code
-            )
-
-            console.log('Account confirmed successfully: ', response);
-            router.replace('/');
+            const response = await confirmAccount(email, code);
+            console.log('[1/4] Account confirmed successfully: ', response);
         } catch (error) {
-            console.error('Error confirming account: ', error);
+            console.error('[1/4] Error on confirmAccount: ', error);
+            return;
         }
+
+        try {
+            const response = await completeLogin(email);
+            console.log('[2/4] Logged in successfully: ', response);
+        } catch (error) {
+            console.error('[2/4] Error on completeLogin: ', error);
+            return;
+        }
+
+        let idToken: string;
+        try {
+            idToken = await getIdToken();
+            console.log('[3/4] Got idToken.');
+        } catch (error) {
+            console.error('[3/4] Error on getIdToken: ', error);
+            return;
+        }
+
+        try {
+            const profileData: ProfileData = JSON.parse(profile);
+            const result = await createProfile(idToken, profileData);
+            console.log('[4/4] Profile created: ', result);
+        } catch (error) {
+            console.error('[4/4] Error on createProfile: ', error);
+            return;
+        }
+
+        router.replace('/home/home');
     }
 
     return (

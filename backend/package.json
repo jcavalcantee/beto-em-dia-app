@@ -1,0 +1,17 @@
+{
+  "name": "beto-em-dia-backend",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1130.0",
+    "@aws-sdk/lib-dynamodb": "^3.1130.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.163",
+    "@types/node": "^26.5.1",
+    "typescript": "^5.0.0"
+  }
+}

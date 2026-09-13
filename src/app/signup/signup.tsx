@@ -32,22 +32,57 @@ export default function Signup() {
     const handleCreateAccount = async (email: string, password: string) => {
         try {
             const response = await createAccount(
-                email, 
-                password
+                email,
+                password,
+                form.name
             );
 
             console.log('Account created successfully: ', response);
 
+            const profile = {
+                name: form.name,
+                age: form.age,
+                diagnosisTime: form.diagnosisTime,
+                treatmentType: form.treatmentType,
+                carboDayGoal: form.carboDayGoal,
+                insulinCarboRatio: Number(form.insulinCarboRatio),
+                insulinSensitivity: Number(form.insulinSensitivity),
+                targetGlucose: Number(form.targetGlucose),
+                basalInsulin: form.basalInsulin,
+            };
+
             router.push({
                 pathname: '/signup/validateAccount',
                 params: {
-                    email: email
+                    email: email,
+                    profile: JSON.stringify(profile)
                 }
             });
         } catch (error) {
             console.error('Error creating account: ', error);
         }
     }
+
+    const validatePassword = (password: string): boolean => {
+        const hasMinLength = password.length >= 8;
+        const hasUppercase = /[A-Z]/.test(password);
+        const hasLowercase = /[a-z]/.test(password);
+        const hasSpecialChar = /[^A-Za-z0-9]/.test(password);
+
+        return (
+            hasMinLength &&
+            hasUppercase &&
+            hasLowercase &&
+            hasSpecialChar
+        );
+    };
+
+    const passwordRequirements = {
+        minLength: form.password.length >= 8,
+        uppercase: /[A-Z]/.test(form.password),
+        lowercase: /[a-z]/.test(form.password),
+        special: /[^A-Za-z0-9]/.test(form.password),
+    };
 
     const validateStepOne = (name: string, email: string, password: string): boolean => {
         if (name.trim() === '' || email.trim() === '' || password.trim() === '')
@@ -59,7 +94,7 @@ export default function Signup() {
 
         if (!user || !domain)
             return false
-        if (password.length < 8)
+        if (!validatePassword(password))
             return false
 
         return true
@@ -167,6 +202,25 @@ export default function Signup() {
                             }))
                         }
                     />
+
+                    <View style={{ marginTop: 8 }}>
+                        <Text style={[styles.passwordRequirement, passwordRequirements.minLength && styles.passwordRequirementValid]}>
+                            {passwordRequirements.minLength ? '✓' : '' } 8 caracteres
+                        </Text>
+
+                        <Text style={[styles.passwordRequirement, passwordRequirements.uppercase && styles.passwordRequirementValid]}>
+                            {passwordRequirements.uppercase ? '✓' : ''} 1 letra maiúscula
+                        </Text>
+
+                        <Text style={[styles.passwordRequirement, passwordRequirements.lowercase && styles.passwordRequirementValid]}>
+                            {passwordRequirements.lowercase ? '✓' : ''} 1 letra minúscula
+                        </Text>
+
+                        <Text style={[styles.passwordRequirement, passwordRequirements.special && styles.passwordRequirementValid]}>
+                            {passwordRequirements.special ? '✓' : ''} 1 caractere especial
+                        </Text>
+                    </View>
+
                 </View>
             )
             // SESSÃO: SOBRE VOCÊ E A DM1
@@ -467,19 +521,19 @@ export default function Signup() {
                         <Text style={[styles.stepText, { textAlign: 'left', fontSize: 13 }]}>COMO VAI FICAR A SUA CONTA</Text>
                         <Text style={[styles.resume]}>
                             Algo de 60 g de carbo com glicemia em 168 → {
-                                Number.isFinite(resultCalc.totalDose) 
-                                ? resultCalc.totalDose.toFixed(1).replace('.', ',') 
-                                : 0
-                                }U. (
-                                    {
-                                        Number.isFinite(resultCalc.carbDose) 
-                                        ? resultCalc.carbDose.toFixed(1).replace('.', ',') 
-                                        : 0
-                                    } refeição + {
-                                        Number.isFinite(resultCalc.correctionDose) 
-                                        ? resultCalc.correctionDose.toFixed(1).replace('.', ',') 
-                                        : 0
-                                    }U de correção).
+                                Number.isFinite(resultCalc.totalDose)
+                                    ? resultCalc.totalDose.toFixed(1).replace('.', ',')
+                                    : 0
+                            }U. (
+                            {
+                                Number.isFinite(resultCalc.carbDose)
+                                    ? resultCalc.carbDose.toFixed(1).replace('.', ',')
+                                    : 0
+                            } refeição + {
+                                Number.isFinite(resultCalc.correctionDose)
+                                    ? resultCalc.correctionDose.toFixed(1).replace('.', ',')
+                                    : 0
+                            }U de correção).
                         </Text>
                     </View>
 
